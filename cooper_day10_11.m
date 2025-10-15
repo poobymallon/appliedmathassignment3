@@ -133,8 +133,9 @@ function fig5_local_explicit_with_fits()
     [p_em,k_em]   = loglog_fit(hs, loc_em);
     fprintf('[local explicit fits] ref p≈%.3f | fe p≈%.3f | em p≈%.3f\n', p_ref, p_fe, p_em);
 
-    figure(5); clf; hold on; grid on; box on
+    figure(5); clf;  grid on; box on
     loglog(hs, analytical,'mo','markerfacecolor','m','markersize',3)
+    hold on;
     loglog(hs, loc_fe,'ro','markerfacecolor','r','markersize',3)
     loglog(hs, loc_em,'bo','markerfacecolor','b','markersize',3)
     loglog(hs, k_ref*hs.^p_ref,'k-','linewidth',1)
@@ -156,8 +157,9 @@ function fig6_local_all_no_fits()
         [xB,~] = explicit_midpoint_step(@rate_func01, tref, Xref, h);  loc_em(i)=norm(xB-Xtrue);
         [xB,~] = implicit_midpoint_step(@rate_func01, tref, Xref, h);  loc_im(i)=norm(xB-Xtrue);
     end
-    figure(6); clf; hold on; grid on; box on
+    figure(6); clf; grid on; box on
     loglog(hs, loc_fe,'o','markerfacecolor','auto','markersize',3)
+    hold on; 
     loglog(hs, loc_be,'o','markerfacecolor','auto','markersize',3)
     loglog(hs, loc_em,'o','markerfacecolor','auto','markersize',3)
     loglog(hs, loc_im,'o','markerfacecolor','auto','markersize',3)
@@ -182,8 +184,9 @@ function fig7_global_explicit_with_fits()
     [p_gem,k_gem] = loglog_fit(h_em, glob_em);
     fprintf('[global vs h explicit fits] fe p≈%.3f | em p≈%.3f\n', p_gfe, p_gem);
 
-    figure(7); clf; hold on; grid on; box on
+    figure(7); clf;  grid on; box on
     loglog(h_fe, glob_fe,'ro','markerfacecolor','r','markersize',3)
+    hold on;
     loglog(h_em, glob_em,'bo','markerfacecolor','b','markersize',3)
     loglog(h_fe, k_gfe*h_fe.^p_gfe,'k-','linewidth',1.25)
     loglog(h_em, k_gem*h_em.^p_gem,'k-','linewidth',1.25)
@@ -209,8 +212,9 @@ function fig8_global_all_no_fits()
         glob_em(i)=norm(XM(:,end)-Xf); h_em(i)=hm;
         glob_im(i)=norm(XI(:,end)-Xf); h_im(i)=hi;
     end
-    figure(8); clf; hold on; grid on; box on
+    figure(8); clf;  grid on; box on
     loglog(h_fe, glob_fe,'o','markerfacecolor','auto','markersize',3)
+    hold on;
     loglog(h_be, glob_be,'o','markerfacecolor','auto','markersize',3)
     loglog(h_em, glob_em,'o','markerfacecolor','auto','markersize',3)
     loglog(h_im, glob_im,'o','markerfacecolor','auto','markersize',3)
@@ -235,8 +239,9 @@ function fig9_global_calls_explicit_with_fits()
     [p_em,k_em] = loglog_fit(calls_em, glob_em);
     fprintf('[global vs calls explicit fits] fe p≈%.3f | em p≈%.3f\n', p_fe, p_em);
 
-    figure(9); clf; hold on; grid on; box on
+    figure(9); clf;  grid on; box on
     loglog(calls_fe, glob_fe,'ro','markerfacecolor','r','markersize',3)
+    hold on;
     loglog(calls_em, glob_em,'bo','markerfacecolor','b','markersize',3)
     loglog(calls_fe, k_fe*calls_fe.^p_fe,'k-','linewidth',1.25)
     loglog(calls_em, k_em*calls_em.^p_em,'k-','linewidth',1.25)
@@ -262,8 +267,9 @@ function fig10_global_calls_all_no_fits()
         calls_em(i)=nem; glob_em(i)=norm(XM(:,end)-Xf);
         calls_im(i)=nim; glob_im(i)=norm(XI(:,end)-Xf);
     end
-    figure(10); clf; hold on; grid on; box on
+    figure(10); clf;  grid on; box on
     loglog(calls_fe, glob_fe,'o','markerfacecolor','auto','markersize',3)
+    hold on;
     loglog(calls_be, glob_be,'o','markerfacecolor','auto','markersize',3)
     loglog(calls_em, glob_em,'o','markerfacecolor','auto','markersize',3)
     loglog(calls_im, glob_im,'o','markerfacecolor','auto','markersize',3)
