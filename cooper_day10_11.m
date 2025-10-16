@@ -120,13 +120,13 @@ end
 
 % fig 5: local truncation scaling for explicit methods (with |X(t+h)-X(t)| and fit lines)
 function fig5_local_explicit_with_fits()
-    num = 100; hs = logspace(-5,-1,num); tref = 0.492; Xref = solution01(tref);
+    num = 100; hs = logspace(-5,-1,num); tref = 0.492; Xref = solution02(tref); %Xref = solution01(tref);
     analytical = zeros(size(hs)); loc_fe = analytical; loc_em = analytical;
     for i=1:num
-        h = hs(i); Xtrue = solution01(tref+h);
+        h = hs(i); Xtrue = solution02(tref+h); %Xtrue = solution01(tref+h);
         analytical(i) = norm(Xtrue - Xref);
-        [XB,~] = forward_euler_step(@rate_func01, tref, Xref, h);      loc_fe(i)=norm(XB-Xtrue);
-        [XB,~] = explicit_midpoint_step(@rate_func01, tref, Xref, h);  loc_em(i)=norm(XB-Xtrue);
+        [XB,~] = forward_euler_step(@rate_func02, tref, Xref, h);      loc_fe(i)=norm(XB-Xtrue);
+        [XB,~] = explicit_midpoint_step(@rate_func02, tref, Xref, h);  loc_em(i)=norm(XB-Xtrue);
     end
     [p_ref,k_ref] = loglog_fit(hs, analytical);
     [p_fe,k_fe]   = loglog_fit(hs, loc_fe);
@@ -148,15 +148,17 @@ end
 
 % fig 6: local truncation scaling for all four methods (no fit lines)
 function fig6_local_all_no_fits()
-    num = 60; hs = logspace(-4,-1,num); tref = 0.492; Xref = solution01(tref);
+    num = 60; hs = logspace(-4,-1,num); tref = 0.492; Xref = solution02(tref); %Xref = solution01(tref);
     loc_fe=zeros(size(hs)); loc_be=loc_fe; loc_em=loc_fe; loc_im=loc_fe;
     for i=1:num
-        h = hs(i); Xtrue = solution01(tref+h);
-        [xB,~] = forward_euler_step(@rate_func01, tref, Xref, h);      loc_fe(i)=norm(xB-Xtrue);
-        [xB,~] = backward_euler_step(@rate_func01, tref, Xref, h);     loc_be(i)=norm(xB-Xtrue);
-        [xB,~] = explicit_midpoint_step(@rate_func01, tref, Xref, h);  loc_em(i)=norm(xB-Xtrue);
-        [xB,~] = implicit_midpoint_step(@rate_func01, tref, Xref, h);  loc_im(i)=norm(xB-Xtrue);
+        h = hs(i); Xtrue = solution02(tref+h); %Xtrue = solution01(tref+h);
+        [xB,~] = forward_euler_step(@rate_func02, tref, Xref, h);      loc_fe(i)=norm(xB-Xtrue);
+        [xB,~] = backward_euler_step(@rate_func02, tref, Xref, h);     loc_be(i)=norm(xB-Xtrue);
+        [xB,~] = explicit_midpoint_step(@rate_func02, tref, Xref, h);  loc_em(i)=norm(xB-Xtrue);
+        [xB,~] = implicit_midpoint_step(@rate_func02, tref, Xref, h);  loc_im(i)=norm(xB-Xtrue);
     end
+    [p_be,k_be] = loglog_fit(hs, loc_be)
+    [p_im,k_im] = loglog_fit(hs, loc_im)
     figure(6); clf; grid on; box on
     loglog(hs, loc_fe,'o','markerfacecolor','auto','markersize',3)
     hold on; 
@@ -197,21 +199,26 @@ end
 
 % fig 8: global truncation vs average h for all methods (no fit lines)
 function fig8_global_all_no_fits()
-    t0=0; tf=2; X0 = solution01(t0); Xf = solution01(tf);
+    t0=0; tf=2; X0 = solution02(t0); Xf = solution02(tf); %X0 = solution01(t0); Xf = solution01(tf);
     num=60; hs=logspace(-4,-1,num);
     glob_fe=zeros(size(hs)); glob_be=glob_fe; glob_em=glob_fe; glob_im=glob_fe;
     h_fe=glob_fe; h_be=glob_fe; h_em=glob_fe; h_im=glob_fe;
     for i=1:num
         h=hs(i);
-        [~, XF, hf] = forward_euler_fixed_step_integration(@rate_func01,[t0,tf],X0,h);
-        [~, XB, hb] = backward_euler_fixed_step_integration(@rate_func01,[t0,tf],X0,h);
-        [~, XM, hm] = explicit_midpoint_fixed_step_integration(@rate_func01,[t0,tf],X0,h);
-        [~, XI, hi] = implicit_midpoint_fixed_step_integration(@rate_func01,[t0,tf],X0,h);
+        [~, XF, hf] = forward_euler_fixed_step_integration(@rate_func02,[t0,tf],X0,h);
+        [~, XB, hb] = backward_euler_fixed_step_integration(@rate_func02,[t0,tf],X0,h);
+        [~, XM, hm] = explicit_midpoint_fixed_step_integration(@rate_func02,[t0,tf],X0,h);
+        [~, XI, hi] = implicit_midpoint_fixed_step_integration(@rate_func02,[t0,tf],X0,h);
         glob_fe(i)=norm(XF(:,end)-Xf); h_fe(i)=hf;
         glob_be(i)=norm(XB(:,end)-Xf); h_be(i)=hb;
         glob_em(i)=norm(XM(:,end)-Xf); h_em(i)=hm;
         glob_im(i)=norm(XI(:,end)-Xf); h_im(i)=hi;
     end
+    [p_gfe,k_gfe] = loglog_fit(h_fe, glob_fe)
+    [p_gbe,k_gbe] = loglog_fit(h_fe, glob_be)
+    [p_gem,k_gem] = loglog_fit(h_fe, glob_em)
+    [p_gim,k_gim] = loglog_fit(h_fe, glob_im)
+
     figure(8); clf;  grid on; box on
     loglog(h_fe, glob_fe,'o','markerfacecolor','auto','markersize',3)
     hold on;
@@ -252,21 +259,26 @@ end
 
 % fig 10: global truncation vs number of f calls for all methods (no fit lines)
 function fig10_global_calls_all_no_fits()
-    t0=0; tf=2; X0=solution01(t0); Xf=solution01(tf);
+    t0=0; tf=2; X0=solution02(t0); Xf=solution02(tf); %X0=solution01(t0); Xf=solution01(tf);
     num=60; hs=logspace(-4,-1,num);
     calls_fe=zeros(size(hs)); calls_be=calls_fe; calls_em=calls_fe; calls_im=calls_fe;
     glob_fe=calls_fe; glob_be=calls_fe; glob_em=calls_fe; glob_im=calls_fe;
     for i=1:num
         h=hs(i);
-        [~, XF, ~, nfe] = forward_euler_fixed_step_integration(@rate_func01,[t0,tf],X0,h);
-        [~, XB, ~, nbe] = backward_euler_fixed_step_integration(@rate_func01,[t0,tf],X0,h);
-        [~, XM, ~, nem] = explicit_midpoint_fixed_step_integration(@rate_func01,[t0,tf],X0,h);
-        [~, XI, ~, nim] = implicit_midpoint_fixed_step_integration(@rate_func01,[t0,tf],X0,h);
+        [~, XF, ~, nfe] = forward_euler_fixed_step_integration(@rate_func02,[t0,tf],X0,h);
+        [~, XB, ~, nbe] = backward_euler_fixed_step_integration(@rate_func02,[t0,tf],X0,h);
+        [~, XM, ~, nem] = explicit_midpoint_fixed_step_integration(@rate_func02,[t0,tf],X0,h);
+        [~, XI, ~, nim] = implicit_midpoint_fixed_step_integration(@rate_func02,[t0,tf],X0,h);
         calls_fe(i)=nfe; glob_fe(i)=norm(XF(:,end)-Xf);
         calls_be(i)=nbe; glob_be(i)=norm(XB(:,end)-Xf);
         calls_em(i)=nem; glob_em(i)=norm(XM(:,end)-Xf);
         calls_im(i)=nim; glob_im(i)=norm(XI(:,end)-Xf);
     end
+    [p_gfe,k_gfe] = loglog_fit(calls_fe, glob_fe)
+    [p_gbe,k_gbe] = loglog_fit(calls_be, glob_be)
+    [p_gem,k_gem] = loglog_fit(calls_em, glob_em)
+    [p_gim,k_gim] = loglog_fit(calls_im, glob_im)
+
     figure(10); clf;  grid on; box on
     loglog(calls_fe, glob_fe,'o','markerfacecolor','auto','markersize',3)
     hold on;
@@ -283,6 +295,14 @@ end
 % rate and exact solution for eqn (5)
 function dXdt = rate_func01(t,X), dXdt = -5*X + 5*cos(t) - sin(t); end
 function X = solution01(t), X = cos(t); end
+
+% rate and exact solution for second helper
+function dXdt = rate_func02(t,X)
+    dXdt = [0,-1;1,0]*X;
+end
+function X = solution02(t)
+    X = [cos(t);sin(t)];
+end
 
 % forward euler step
 function [XB,num_evals] = forward_euler_step(rate_func_in,t,XA,h)
