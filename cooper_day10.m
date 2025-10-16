@@ -1,24 +1,24 @@
 function cooper_day10()
-    % [t_list,X_list,h_avg, num_evals] = forward_euler_fixed_step_integration(@rate_func01,[0,10],1,.1);
-    % 
-    % figure
-    % hold on
-    % fplot(@solution01, [0,10]);
-    % plot(t_list, X_list)
-    % 
-    % [t_list2,X_list2,h_avg2, num_evals2] = explicit_midpoint_fixed_step_integration(@rate_func01,[0,10],1,.1);
+    [t_list,X_list,h_avg, num_evals] = forward_euler_fixed_step_integration(@rate_func01,[0,10],1,.1);
 
-    % figure
-    % hold on
-    % fplot(@solution01, [0,10]);
-    % plot(t_list2, X_list2)
+    figure
+    hold on
+    fplot(@solution01, [0,10]);
+    plot(t_list, X_list)
 
-    % 
-    % 
-    % 
-    % [t_list3, X_list3, h_avg3, num_evals3] = fixed_step_integration(@rate_func01,@backward_euler_step,[0,10],1,.1);
-    % [t_list4, X_list4, h_avg4, num_evals4] = fixed_step_integration(@rate_func01,@implicit_midpoint_step,[0,10],1,.1);
-    % 
+    [t_list2,X_list2,h_avg2, num_evals2] = explicit_midpoint_fixed_step_integration(@rate_func01,[0,10],1,.1);
+
+    figure
+    hold on
+    fplot(@solution01, [0,10]);
+    plot(t_list2, X_list2)
+
+
+
+
+    [t_list3, X_list3, h_avg3, num_evals3] = fixed_step_integration(@rate_func01,@backward_euler_step,[0,10],1,.1);
+    [t_list4, X_list4, h_avg4, num_evals4] = fixed_step_integration(@rate_func01,@implicit_midpoint_step,[0,10],1,.1);
+
     % 
     % 
     num = 100;
