@@ -1,5 +1,5 @@
 function cooper_day10_11()
-    % part: menu to generate plots in guideline order (1..10)
+    % part: menu to generate plots in guideline order (1..10) + implicit overlays (11..12)
 
     clc; close all;
     disp("choose which plots to generate (numbers refer to the submission order):");
@@ -15,6 +15,8 @@ function cooper_day10_11()
         "8. fig 8: global truncation vs h (all methods, no fit lines)"
         "9. fig 9: global truncation vs # of f calls (explicit only, with fit lines)"
         "10. fig 10: global truncation vs # of f calls (all methods, no fit lines)"
+        "11. fig 11: backward euler vs exact (several h, overlay)"
+        "12. fig 12: implicit midpoint vs exact (several h, overlay)"
     ];
     disp(join(opts, newline)); disp(" ");
     choice = input("enter plot number:");
@@ -31,13 +33,15 @@ function cooper_day10_11()
             case 8,  fig8_global_all_no_fits();
             case 9,  fig9_global_calls_explicit_with_fits();
             case 10, fig10_global_calls_all_no_fits();
+            case 11, fig11_backward_euler_vs_exact();
+            case 12, fig12_implicit_midpoint_vs_exact();
             otherwise, warning("invalid choice: %d", i);
         end
     end
     if isempty(choice), disp("no plots selected."); else, disp("done"); end
 end
 
-% FIGURES IN ORDSER OF SUBMISSIONS GUIDELINES 
+% figures in order of submissions guidelines
 
 % fig 1: forward euler vs exact (overlay, several h)
 function fig1_forward_euler_vs_exact()
@@ -290,7 +294,43 @@ function fig10_global_calls_all_no_fits()
     legend('forward euler','backward euler','explicit midpoint','implicit midpoint','location','southwest')
 end
 
-% HELPERS AND METHODS
+% fig 11: backward euler vs exact (overlay, several h)
+function fig11_backward_euler_vs_exact()
+    t0 = 0; tf = 10; X0 = 1;
+    hs_show = [0.4 0.2 0.1];
+
+    figure(11); clf; hold on; grid on; box on
+    fplot(@solution01,[t0,tf],'k','LineWidth',1.8)
+    colors = lines(numel(hs_show)); markers = {'o','s','^'};
+    for i = 1:numel(hs_show)
+        h = hs_show(i);
+        [tB, XB] = backward_euler_fixed_step_integration(@rate_func01,[t0,tf],X0,h);
+        plot(tB, XB, ['-' markers{i}], 'Color', colors(i,:), 'LineWidth', 1.0, 'MarkerSize', 4)
+    end
+    xlabel('t'); ylabel('x')
+    title('fig 11: backward euler vs exact (overlay)')
+    legend(['exact', compose('h=%.2g',hs_show)],'location','best')
+end
+
+% fig 12: implicit midpoint vs exact (overlay, several h)
+function fig12_implicit_midpoint_vs_exact()
+    t0 = 0; tf = 10; X0 = 1;
+    hs_show = [0.4 0.2 0.1];
+
+    figure(12); clf; hold on; grid on; box on
+    fplot(@solution01,[t0,tf],'k','LineWidth',1.8)
+    colors = lines(numel(hs_show)); markers = {'o','s','^'};
+    for i = 1:numel(hs_show)
+        h = hs_show(i);
+        [tI, XI] = implicit_midpoint_fixed_step_integration(@rate_func01,[t0,tf],X0,h);
+        plot(tI, XI, ['-' markers{i}], 'Color', colors(i,:), 'LineWidth', 1.0, 'MarkerSize', 4)
+    end
+    xlabel('t'); ylabel('x')
+    title('fig 12: implicit midpoint vs exact (overlay)')
+    legend(['exact', compose('h=%.2g',hs_show)],'location','best')
+end
+
+% helpers and methods
 
 % rate and exact solution for eqn (5)
 function dXdt = rate_func01(t,X), dXdt = -5*X + 5*cos(t) - sin(t); end
